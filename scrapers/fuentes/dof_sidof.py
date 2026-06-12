@@ -74,7 +74,7 @@ def descargar_dia(conn, fecha: date, con_texto: bool) -> tuple[int, int]:
                     time.sleep(PAUSA_SEG)
                     det = requests.get(f"{BASE}/nota/{cod}", headers=HEADERS, timeout=60)
                     det.raise_for_status()
-                    contenido = (det.json().get("Nota") or {}).get("contenido") or ""
+                    contenido = (det.json().get("Nota") or {}).get("cadenaContenido") or ""
                     texto = html_a_texto(contenido) if contenido else None
                 except requests.RequestException:
                     texto = None  # el título queda; el texto se reintenta en otra corrida
@@ -124,6 +124,39 @@ def run(desde: date | None = None, con_texto: bool = True) -> None:
         raise
 
 
+def backfill_textos(limite: int | None = None) -> None:
+    """Descarga el texto completo de notas fiscales que quedaron sin él."""
+    conn = get_connection()
+    corrida = registrar_corrida(conn, "dof_backfill")
+    pendientes = conn.execute(
+        "SELECT cod_nota FROM dof_notas WHERE es_fiscal = 1 AND texto IS NULL ORDER BY fecha DESC"
+        + (f" LIMIT {int(limite)}" if limite else "")
+    ).fetchall()
+    ok = err = 0
+    for fila in pendientes:
+        cod = fila["cod_nota"]
+        try:
+            det = requests.get(f"{BASE}/nota/{cod}", headers=HEADERS, timeout=60)
+            det.raise_for_status()
+            contenido = (det.json().get("Nota") or {}).get("cadenaContenido") or ""
+            if contenido:
+                conn.execute(
+                    "UPDATE dof_notas SET texto = ?, capturado_en = ? WHERE cod_nota = ?",
+                    (html_a_texto(contenido), utcnow(), cod),
+                )
+                conn.commit()
+                ok += 1
+        except requests.RequestException:
+            err += 1
+        time.sleep(PAUSA_SEG)
+    msg = f"backfill: {ok} textos descargados, {err} errores, {len(pendientes)} pendientes al inicio"
+    cerrar_corrida(conn, corrida, "ok", msg)
+    print(f"[dof_sidof] {msg}")
+
+
 if __name__ == "__main__":
-    inicio = date.fromisoformat(sys.argv[1]) if len(sys.argv) > 1 else None
-    run(inicio)
+    if len(sys.argv) > 1 and sys.argv[1] == "backfill":
+        backfill_textos(int(sys.argv[2]) if len(sys.argv) > 2 else None)
+    else:
+        inicio = date.fromisoformat(sys.argv[1]) if len(sys.argv) > 1 else None
+        run(inicio)
