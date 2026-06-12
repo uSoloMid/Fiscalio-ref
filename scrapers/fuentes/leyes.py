@@ -77,17 +77,19 @@ def descargar(clave: str, titulo: str, tipo: str, url: str, conn) -> bool:
     )
     conn.commit()
     kb = len(resp.content) // 1024
-    md = f"{len(contenido) // 1024} KB md" if contenido else "sin conversión"
-    print(f"  [{clave}] {kb} KB pdf → {md}")
+    md = f"{len(contenido) // 1024} KB md" if contenido else "sin conversion"
+    print(f"  [{clave}] {kb} KB pdf -> {md}")  # solo ASCII: la consola Windows usa cp1252
     return contenido is not None
 
 
-def run() -> None:
+def run(solo_claves: set[str] | None = None) -> None:
     conn = get_connection()
     corrida = registrar_corrida(conn, "leyes")
     ok = errores = 0
     try:
         for clave, titulo, tipo, url in LEYES:
+            if solo_claves and clave not in solo_claves:
+                continue
             try:
                 descargar(clave, titulo, tipo, url, conn)
                 ok += 1
@@ -103,4 +105,4 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    run()
+    run(set(sys.argv[1:]) or None)
