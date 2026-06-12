@@ -7,7 +7,8 @@ let db: Database.Database | null = null;
 
 function getDb(): Database.Database {
   if (!db) {
-    db = new Database(DB_PATH, { readonly: true, fileMustExist: true });
+    db = new Database(DB_PATH, { readonly: true, fileMustExist: true, timeout: 15000 });
+    db.pragma("busy_timeout = 15000");
   }
   return db;
 }
@@ -61,6 +62,29 @@ export function getHistorial(clave: string): Indicador[] {
        FROM indicadores WHERE clave = ? ORDER BY vigencia_inicio DESC`
     )
     .all(clave) as Indicador[];
+}
+
+export interface NotaDof {
+  cod_nota: number;
+  fecha: string;
+  edicion: string;
+  titulo: string;
+  organismo: string | null;
+  url: string;
+}
+
+/** Últimas notas fiscales del DOF descargadas por el scraper. Vacío si aún no corre. */
+export function getNotasDofFiscales(limite = 25): NotaDof[] {
+  try {
+    return getDb()
+      .prepare(
+        `SELECT cod_nota, fecha, edicion, titulo, organismo, url
+         FROM dof_notas WHERE es_fiscal = 1 ORDER BY fecha DESC, cod_nota DESC LIMIT ?`
+      )
+      .all(limite) as NotaDof[];
+  } catch {
+    return []; // la tabla puede no existir si el scraper no ha corrido
+  }
 }
 
 export function getTarifaVigente(clave: string): Tarifa | null {

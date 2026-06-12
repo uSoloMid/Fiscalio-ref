@@ -79,8 +79,46 @@ CREATE TABLE IF NOT EXISTS corridas (
     mensaje TEXT
 );
 
+-- Notas del DOF descargadas del servicio oficial SIDOF (Módulo 1 y 5).
+CREATE TABLE IF NOT EXISTS dof_notas (
+    cod_nota INTEGER PRIMARY KEY,        -- código oficial del DOF
+    fecha TEXT NOT NULL,                 -- fecha de publicación ISO
+    edicion TEXT NOT NULL,               -- 'MAT' | 'VES' | 'EXT'
+    titulo TEXT NOT NULL,
+    organismo TEXT,
+    texto TEXT,                          -- texto completo (HTML convertido a texto/markdown)
+    es_fiscal INTEGER NOT NULL DEFAULT 0,-- 1 si coincide con keywords fiscales
+    url TEXT NOT NULL,
+    capturado_en TEXT NOT NULL
+);
+
+-- Documentos legales completos (leyes, RMF) convertidos a markdown.
+CREATE TABLE IF NOT EXISTS documentos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    clave TEXT NOT NULL,                 -- ej. 'lisr', 'lft', 'rmf_2026'
+    titulo TEXT NOT NULL,
+    tipo TEXT NOT NULL,                  -- 'ley' | 'rmf' | 'anexo' | 'reglamento'
+    ultima_reforma TEXT,                 -- fecha de última reforma si se conoce
+    fuente_url TEXT NOT NULL,
+    contenido_md TEXT,                   -- texto markdown (markitdown)
+    archivo_local TEXT,                  -- ruta del PDF original descargado
+    capturado_en TEXT NOT NULL,
+    UNIQUE (clave)
+);
+
+-- Suscriptores del boletín (newsletter).
+CREATE TABLE IF NOT EXISTS suscriptores (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE,
+    creado_en TEXT NOT NULL,
+    confirmado INTEGER NOT NULL DEFAULT 0,
+    activo INTEGER NOT NULL DEFAULT 1
+);
+
 CREATE INDEX IF NOT EXISTS idx_indicadores_clave ON indicadores (clave, vigencia_inicio DESC);
 CREATE INDEX IF NOT EXISTS idx_tarifas_clave ON tarifas (clave, vigencia_inicio DESC);
+CREATE INDEX IF NOT EXISTS idx_dof_fecha ON dof_notas (fecha DESC);
+CREATE INDEX IF NOT EXISTS idx_dof_fiscal ON dof_notas (es_fiscal, fecha DESC);
 """
 
 
@@ -90,9 +128,12 @@ def utcnow() -> str:
 
 def get_connection() -> sqlite3.Connection:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=15)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    # WAL permite lecturas concurrentes mientras un scraper escribe.
+    conn.execute("PRAGMA journal_mode = WAL")
+    conn.execute("PRAGMA busy_timeout = 15000")
     conn.executescript(SCHEMA)
     return conn
 

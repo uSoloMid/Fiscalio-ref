@@ -7,6 +7,11 @@ export interface LineaRecibo {
   fundamento?: string;
 }
 
+export interface Explicacion {
+  titulo: string;
+  texto: string;
+}
+
 export interface DatosRecibo {
   titulo: string;
   subtitulo: string;
@@ -14,6 +19,8 @@ export interface DatosRecibo {
   fundamentoLegal: string;
   fuenteUrl: string;
   archivo: string;
+  /** Si se incluyen, se agrega una segunda página "¿Por qué cada cosa?". */
+  explicaciones?: Explicacion[];
 }
 
 const VERDE_OSCURO = "#1a4a3a";
@@ -117,6 +124,52 @@ export function descargarRecibo(datos: DatosRecibo): void {
     margen,
     y
   );
+
+  // ── Página 2: explicaciones del porqué de cada cosa ────────────────
+  if (datos.explicaciones && datos.explicaciones.length > 0) {
+    doc.addPage();
+    doc.setFillColor(VERDE_OSCURO);
+    doc.rect(0, 0, ancho, 22, "F");
+    doc.setTextColor("#ffffff");
+    doc.setFont("times", "bold");
+    doc.setFontSize(15);
+    doc.text("¿Por qué cada cosa?", margen, 14);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Explicación de cada concepto con su fundamento legal", ancho - margen, 14, {
+      align: "right",
+    });
+
+    let y2 = 34;
+    for (const exp of datos.explicaciones) {
+      const cuerpo = doc.splitTextToSize(exp.texto, ancho - margen * 2);
+      const altoBloque = 7 + cuerpo.length * 4 + 6;
+      if (y2 + altoBloque > 280) {
+        doc.addPage();
+        y2 = 20;
+      }
+      doc.setFont("times", "bold");
+      doc.setFontSize(11.5);
+      doc.setTextColor(VERDE_OSCURO);
+      doc.text(exp.titulo, margen, y2);
+      y2 += 6;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(TINTA);
+      doc.text(cuerpo, margen, y2);
+      y2 += cuerpo.length * 4 + 7;
+      doc.setDrawColor("#e7e5e4");
+      doc.line(margen, y2 - 4, ancho - margen, y2 - 4);
+    }
+
+    doc.setFontSize(7.5);
+    doc.setTextColor(GRIS);
+    doc.text(
+      "Fiscalio Info — proyecto público y gratuito. Documento informativo; no sustituye asesoría profesional.",
+      margen,
+      290
+    );
+  }
 
   doc.save(datos.archivo);
 }

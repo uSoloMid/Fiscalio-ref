@@ -8,7 +8,8 @@ export interface CalculadoraInfo {
 export const CALCULADORAS: CalculadoraInfo[] = [
   { href: "/calculadoras/isr", label: "ISR asalariado", fundamento: "Art. 96 LISR", disponible: true },
   { href: "/calculadoras/resico", label: "RESICO personas físicas", fundamento: "Art. 113-E LISR", disponible: true },
-  { href: "/calculadoras/liquidacion", label: "Liquidación laboral", fundamento: "Arts. 48 y 50 LFT", disponible: true },
+  { href: "/calculadoras/finiquito", label: "Finiquito y liquidación + ISR", fundamento: "LFT + Art. 93 LISR", disponible: true },
+  { href: "/calculadoras/liquidacion", label: "Liquidación rápida (bruto)", fundamento: "Arts. 48 y 50 LFT", disponible: true },
   { href: "/calculadoras/imss", label: "Cuotas IMSS", fundamento: "Art. 25 LSS", disponible: false },
   { href: "/calculadoras/aguinaldo", label: "Aguinaldo", fundamento: "Art. 87 LFT", disponible: false },
   { href: "/calculadoras/ptu", label: "PTU", fundamento: "Arts. 120–131 LFT", disponible: false },

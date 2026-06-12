@@ -53,6 +53,26 @@ export default function ISRCalculator({ tarifa }: { tarifa: Tarifa }) {
         "Art. 96 de la Ley del Impuesto sobre la Renta; tarifa del Anexo 8 de la RMF 2026 (DOF 28/12/2025); Decreto de subsidio para el empleo (DOF 31/12/2025). No incluye otras percepciones, deducciones ni cuotas IMSS.",
       fuenteUrl: tarifa.fuente_url,
       archivo: `isr-${periodo}-${ingreso.toFixed(0)}.pdf`,
+      explicaciones: [
+        {
+          titulo: "Por qué la tarifa es progresiva",
+          texto:
+            "El Art. 96 LISR divide el ingreso en renglones: solo el excedente sobre el límite inferior de tu renglón paga la tasa marginal; lo anterior ya está cobrado en la cuota fija. Por eso ganar un peso más nunca te deja con menos dinero neto.",
+        },
+        {
+          titulo: "Por qué cambian los límites según la periodicidad",
+          texto: `La tarifa oficial es mensual (30.4 días). Para pagos ${periodo !== "mensual" ? periodo + "es" : "mensuales"}, el Anexo 8 RMF la proporciona a los días del periodo (quincenal 15.2, semanal 7, diario 1), escalando límites y cuotas fijas con el mismo factor.`,
+        },
+        {
+          titulo: "Cómo funciona el subsidio al empleo",
+          texto: `Decreto DOF 31/12/2025: si tu ingreso mensual no excede $${SUBSIDIO_EMPLEO_2026.topeIngresoMensual.toLocaleString("es-MX")}, se acreditan $${SUBSIDIO_EMPLEO_2026.montoMensual} mensuales (15.02% de la UMA mensual) contra tu ISR. Desde 2024 el subsidio solo reduce el impuesto: si supera al ISR, la retención queda en $0 pero no se paga diferencia en efectivo.`,
+        },
+        {
+          titulo: "Qué no incluye este cálculo",
+          texto:
+            "No considera otras percepciones (aguinaldo, prima vacacional, horas extra), deducciones personales (que se aplican en la declaración anual), ni cuotas IMSS del trabajador (~2.5% aprox., según el salario base de cotización).",
+        },
+      ],
     });
   }
 

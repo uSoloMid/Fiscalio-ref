@@ -10,6 +10,9 @@ out/
 
 # Base de datos local (se regenera con seed + scrapers)
 data/*.db
+data/*.db-wal
+data/*.db-shm
+data/leyes/
 
 # Entorno
 .env

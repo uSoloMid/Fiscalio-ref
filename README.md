@@ -46,6 +46,19 @@ set INEGI_TOKEN=tu_token
 python scrapers/run_all.py
 ```
 
+### Descarga del DOF y de las leyes
+
+```bash
+# Sumario diario del DOF (servicio oficial SIDOF) + texto de notas fiscales
+python scrapers/fuentes/dof_sidof.py 2026-01-01   # desde la fecha indicada
+
+# Leyes vigentes (Cámara de Diputados) + Anexo 8 RMF → markdown en la BD
+# Requiere: pip install "markitdown[pdf]"
+python scrapers/fuentes/leyes.py
+```
+
+Las notas fiscales del DOF aparecen automáticamente en la página **/cambios** del sitio.
+
 ## Datos incluidos (verificados)
 
 | Dato | Vigencia | Fuente |

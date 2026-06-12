@@ -11,8 +11,8 @@ import traceback
 
 SCRAPERS = [
     "fuentes.inegi_api",   # UMA + INPC (requiere INEGI_TOKEN)
-    # "fuentes.dof",       # pendiente: RMF y reformas (DOF tiene cadena SSL incompleta)
-    # "fuentes.conasami",  # pendiente: gob.mx bloquea clientes no-navegador
+    "fuentes.dof_sidof",   # sumario diario del DOF + texto de notas fiscales
+    "fuentes.leyes",       # leyes vigentes (Diputados) + RMF → markdown en DB
 ]
 
 
