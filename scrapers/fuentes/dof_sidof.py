@@ -91,6 +91,9 @@ def descargar_dia(conn, fecha: date, con_texto: bool) -> tuple[int, int]:
             )
             nuevas += 1
             fiscales += es_fiscal
+            # Commit por nota: evita mantener el write-lock abierto mientras
+            # se descarga el texto de la siguiente (las descargas tardan segundos).
+            conn.commit()
     conn.commit()
     return nuevas, fiscales
 
