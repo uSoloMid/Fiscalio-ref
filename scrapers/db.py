@@ -127,6 +127,16 @@ def upsert_indicador(
                WHERE clave = ? AND vigencia_fin IS NULL AND vigencia_inicio < ?""",
             (vigencia_inicio, clave, vigencia_inicio),
         )
+        # Si se inserta un valor histórico (hay otro más reciente), su vigencia
+        # termina donde inicia el siguiente.
+        if vigencia_fin is None:
+            siguiente = conn.execute(
+                """SELECT MIN(vigencia_inicio) AS v FROM indicadores
+                   WHERE clave = ? AND vigencia_inicio > ?""",
+                (clave, vigencia_inicio),
+            ).fetchone()
+            if siguiente and siguiente["v"] is not None:
+                vigencia_fin = siguiente["v"]
         conn.execute(
             """INSERT INTO indicadores
                (clave, valor, unidad, vigencia_inicio, vigencia_fin, fuente,

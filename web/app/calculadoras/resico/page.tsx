@@ -1,5 +1,5 @@
 import { getTarifaVigente } from "@/lib/db";
-import CalculadoraResico from "./CalculadoraResico";
+import RESICOCalculator from "@/components/calculators/RESICOCalculator";
 
 export const dynamic = "force-dynamic";
 
@@ -12,5 +12,5 @@ export default function PaginaResico() {
   if (!tarifa) {
     return <p>No hay tarifa RESICO cargada. Ejecuta el seed de la base de datos.</p>;
   }
-  return <CalculadoraResico tarifa={tarifa} />;
+  return <RESICOCalculator tarifa={tarifa} />;
 }

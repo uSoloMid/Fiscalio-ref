@@ -1,5 +1,5 @@
 import { getTarifaVigente } from "@/lib/db";
-import CalculadoraIsr from "./CalculadoraIsr";
+import ISRCalculator from "@/components/calculators/ISRCalculator";
 
 export const dynamic = "force-dynamic";
 
@@ -12,5 +12,5 @@ export default function PaginaIsr() {
   if (!tarifa) {
     return <p>No hay tarifa ISR cargada. Ejecuta el seed de la base de datos.</p>;
   }
-  return <CalculadoraIsr tarifa={tarifa} />;
+  return <ISRCalculator tarifa={tarifa} />;
 }

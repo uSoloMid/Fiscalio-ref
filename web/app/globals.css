@@ -1,18 +1,40 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #faf9f7;
+  --surface: #ffffff;
   --foreground: #1c1917;
+  --muted: #78716c;
+  --line: #e7e5e4;
   --ink: #1a2e22;
-  --accent: #047857;
-  --accent-bright: #10b981;
+  --accent: #1a4a3a;
+  --accent-bright: #2d9b6f;
+  --dot: rgba(28, 25, 23, 0.04);
+}
+
+.dark {
+  --background: #1a1f1c;
+  --surface: #222825;
+  --foreground: #e8e8e0;
+  --muted: #a8a89e;
+  --line: #343b37;
+  --ink: #e8e8e0;
+  --accent: #4dbf8a;
+  --accent-bright: #2d9b6f;
+  --dot: rgba(232, 232, 224, 0.04);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
   --color-ink: var(--ink);
   --color-accent: var(--accent);
+  --color-accent-bright: var(--accent-bright);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-fraunces);
@@ -28,13 +50,11 @@ body {
   font-family: var(--font-fraunces), Georgia, serif;
 }
 
-/* Textura sutil de papel en el fondo */
 .bg-paper {
-  background-image: radial-gradient(rgba(28, 25, 23, 0.04) 1px, transparent 1px);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
-/* Tarjetas con elevación al hover */
 .card-lift {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);

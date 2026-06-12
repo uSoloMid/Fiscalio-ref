@@ -32,8 +32,22 @@ UMA_DIARIA = {
 }
 
 # Salario mínimo general diario (vigente desde el 1 de enero de cada año).
-SM_GENERAL = {2022: 172.87, 2023: 207.44, 2024: 248.93, 2025: 278.80, 2026: 315.04}
-SM_FRONTERA = {2022: 260.34, 2023: 312.41, 2024: 374.89, 2025: 419.88, 2026: 440.87}
+SM_GENERAL = {
+    2019: 102.68, 2020: 123.22, 2021: 141.70, 2022: 172.87,
+    2023: 207.44, 2024: 248.93, 2025: 278.80, 2026: 315.04,
+}
+SM_FRONTERA = {
+    2019: 176.72, 2020: 185.56, 2021: 213.39, 2022: 260.34,
+    2023: 312.41, 2024: 374.89, 2025: 419.88, 2026: 440.87,
+}
+
+# INPC general (base 2a quincena julio 2018 = 100). Último dato verificado.
+# Boletín INEGI 2a quincena mayo 2026.
+INPC = {
+    "2026-05-01": 145.527,
+}
+INPC_URL = "https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2026/inpc/inpc_2q2026_05.pdf"
+FUND_INPC = "Art. 59 fracc. III LSNIEG; Art. 20 Bis CFF"
 
 # Tarifa mensual ISR 2026 — Art. 96 LISR, Anexo 8 RMF 2026 (DOF 28/12/2025).
 ISR_MENSUAL_2026 = [
@@ -92,6 +106,17 @@ def seed_salario_minimo(conn) -> int:
     return n
 
 
+def seed_inpc(conn) -> int:
+    n = 0
+    for vig, valor in sorted(INPC.items()):
+        n += upsert_indicador(
+            conn, clave="inpc_general", valor=valor, unidad="indice",
+            vigencia_inicio=vig, fuente="INEGI", fuente_url=INPC_URL,
+            fundamento=FUND_INPC,
+        )
+    return n
+
+
 def seed_tarifas(conn) -> int:
     n = 0
     n += upsert_tarifa(
@@ -120,7 +145,7 @@ def seed_tarifas(conn) -> int:
 
 def main() -> None:
     conn = get_connection()
-    i = seed_uma(conn) + seed_salario_minimo(conn)
+    i = seed_uma(conn) + seed_salario_minimo(conn) + seed_inpc(conn)
     t = seed_tarifas(conn)
     print(f"Seed completado: {i} valores de indicadores, {t} tarifas insertadas.")
 
