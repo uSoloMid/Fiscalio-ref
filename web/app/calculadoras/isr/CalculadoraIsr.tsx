@@ -31,7 +31,10 @@ export default function CalculadoraIsr({ tarifa }: { tarifa: Tarifa }) {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-bold tracking-tight">ISR mensual de asalariados</h1>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700">Calculadora</p>
+      <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+        ISR mensual de asalariados
+      </h1>
       <p className="mt-2 text-stone-600">
         Retención mensual conforme a la tarifa del <strong>{tarifa.fundamento}</strong>, vigente desde el{" "}
         {fechaLarga(tarifa.vigencia_inicio)}
@@ -46,7 +49,7 @@ export default function CalculadoraIsr({ tarifa }: { tarifa: Tarifa }) {
           value={entrada}
           onChange={(e) => setEntrada(e.target.value)}
           placeholder="Ej. 25,000"
-          className="mt-1 w-full max-w-xs rounded border border-stone-300 bg-white px-3 py-2 text-lg focus:border-emerald-600 focus:outline-none"
+          className="mt-1.5 w-full max-w-xs rounded-xl border border-stone-300 bg-white px-4 py-3 font-mono text-lg shadow-sm transition-shadow focus:border-emerald-600 focus:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
         />
       </label>
       {entrada !== "" && !esValida && (
@@ -54,15 +57,17 @@ export default function CalculadoraIsr({ tarifa }: { tarifa: Tarifa }) {
       )}
 
       {resultado && (
-        <section className="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 p-5">
-          <h2 className="text-sm font-medium text-emerald-900">ISR mensual a retener</h2>
-          <p className="text-3xl font-bold text-emerald-900">{mxn(resultado.isr)}</p>
+        <section className="mt-8 overflow-hidden rounded-2xl border border-emerald-900/20 bg-gradient-to-br from-emerald-900 to-emerald-950 p-6 text-emerald-50 shadow-xl shadow-emerald-900/15">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-emerald-300">
+            ISR mensual a retener
+          </h2>
+          <p className="mt-1 font-display text-5xl font-semibold tabular-nums">{mxn(resultado.isr)}</p>
 
-          <h3 className="mt-4 text-sm font-semibold text-emerald-900">
+          <h3 className="mt-5 text-sm font-semibold text-emerald-200">
             Desglose (fórmula del Art. 96 LISR)
           </h3>
           <table className="mt-2 w-full text-sm">
-            <tbody className="divide-y divide-emerald-200">
+            <tbody className="divide-y divide-emerald-50/15">
               <tr>
                 <td className="py-1">Base gravable</td>
                 <td className="py-1 text-right font-mono">{mxn(base)}</td>
@@ -93,7 +98,7 @@ export default function CalculadoraIsr({ tarifa }: { tarifa: Tarifa }) {
               </tr>
             </tbody>
           </table>
-          <p className="mt-3 text-xs text-emerald-800">
+          <p className="mt-3 text-xs text-emerald-300/80">
             No incluye subsidio para el empleo ni otras deducciones; es el impuesto conforme a la tarifa.
           </p>
         </section>

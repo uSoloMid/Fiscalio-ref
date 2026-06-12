@@ -26,7 +26,10 @@ export default function CalculadoraResico({ tarifa }: { tarifa: Tarifa }) {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-bold tracking-tight">RESICO personas físicas — pago mensual</h1>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700">Calculadora</p>
+      <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+        RESICO personas físicas — pago mensual
+      </h1>
       <p className="mt-2 text-stone-600">
         Tasa directa sobre ingresos efectivamente cobrados (sin deducciones), conforme al{" "}
         <strong>{tarifa.fundamento}</strong>, vigente desde {fechaLarga(tarifa.vigencia_inicio)}.
@@ -40,7 +43,7 @@ export default function CalculadoraResico({ tarifa }: { tarifa: Tarifa }) {
           value={entrada}
           onChange={(e) => setEntrada(e.target.value)}
           placeholder="Ej. 45,000"
-          className="mt-1 w-full max-w-xs rounded border border-stone-300 bg-white px-3 py-2 text-lg focus:border-emerald-600 focus:outline-none"
+          className="mt-1.5 w-full max-w-xs rounded-xl border border-stone-300 bg-white px-4 py-3 font-mono text-lg shadow-sm transition-shadow focus:border-emerald-600 focus:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
         />
       </label>
       {entrada !== "" && !esValida && (
@@ -54,14 +57,16 @@ export default function CalculadoraResico({ tarifa }: { tarifa: Tarifa }) {
       )}
 
       {renglon && isr !== null && (
-        <section className="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 p-5">
-          <h2 className="text-sm font-medium text-emerald-900">ISR mensual a pagar</h2>
-          <p className="text-3xl font-bold text-emerald-900">{mxn(isr)}</p>
-          <p className="mt-2 text-sm text-emerald-800">
+        <section className="mt-8 overflow-hidden rounded-2xl border border-emerald-900/20 bg-gradient-to-br from-emerald-900 to-emerald-950 p-6 text-emerald-50 shadow-xl shadow-emerald-900/15">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-emerald-300">
+            ISR mensual a pagar
+          </h2>
+          <p className="mt-1 font-display text-5xl font-semibold tabular-nums">{mxn(isr)}</p>
+          <p className="mt-3 text-sm text-emerald-100">
             Fórmula: {mxn(ingresos)} × {renglon.porcentaje}% = {mxn(isr)} (tasa del renglón aplicable,
             Art. 113-E LISR).
           </p>
-          <p className="mt-1 text-xs text-emerald-800">
+          <p className="mt-1 text-xs text-emerald-300/80">
             No incluye la retención del 1.25% que aplican las personas morales que te paguen
             (Art. 113-J LISR) ni el IVA.
           </p>
